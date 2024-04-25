@@ -15,6 +15,8 @@
 #define PET_MULTIPLIER 1
 #define RETURN_SPEED 10
 
+#define MOD(x, y) ((x) - floorf((x) / (y)) * (y))
+
 SDL_Texture* make_texture(unsigned char* buf, int len, SDL_Renderer* renderer) {
     int width, height, channels;
     unsigned char* data = stbi_load_from_memory(buf, len, &width, &height, &channels, 4);
@@ -25,10 +27,10 @@ SDL_Texture* make_texture(unsigned char* buf, int len, SDL_Renderer* renderer) {
 }
 
 int get_pet_state(float counter, int maxval) {
-    float x = remainder(counter, PET_VALUE) / PET_VALUE;
+    float x = MOD(counter, PET_VALUE) / PET_VALUE;
     if (x < 0.5) x = x * 2;
     else x = x * -2 + 2;
-    return maxval * fabsf(x);
+    return maxval * x;
 }
 
 int main() {
@@ -65,7 +67,7 @@ int main() {
         }
         if (mouse_down) pet_counter += sqrt(pow(delta_x, 2) + pow(delta_y, 2)) * PET_MULTIPLIER + PET_BASE;
         else {
-            float x = remainder(pet_counter, PET_VALUE);
+            float x = MOD(pet_counter, PET_VALUE);
             if (x < PET_VALUE / 2) x -= RETURN_SPEED;
             else x += RETURN_SPEED;
             if (x < 0) x = 0;
